@@ -60,3 +60,21 @@ php artisan products:download-images
 ## 6. Google Maps
 
 Referrer: `https://SIZIN-URL.onrender.com/*`
+
+## Sorun giderme: "Exited with status 1"
+
+En sık nedenler:
+
+1. **APP_KEY eksik** — Render → Environment → `APP_KEY` = yerel `.env` içindeki `base64:...` değeri
+2. **MySQL bağlantısı** — `DB_HOST=db4free.net`, kullanıcı/şifre doğru; db4free panelinde uzaktan erişim açık olmalı
+3. **Eski Dockerfile** — `migrate` başarısız olunca sunucu hiç başlamıyordu; güncel repo `docker/entrypoint.sh` kullanır (migrate hata verse bile site ayağa kalkar)
+
+Deploy sonrası **Logs** sekmesinde `WARN: migrations failed` görürseniz önce DB değişkenlerini düzeltin, sonra **Shell**:
+
+```bash
+php artisan migrate --force
+php artisan db:seed --force
+php artisan products:download-images
+```
+
+`composer.lock` mutlaka GitHub'da olmalı (Docker build için).
