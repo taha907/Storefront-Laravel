@@ -1,129 +1,148 @@
-# Render ile Yayın — OneTap Bilgisayar
+# Render ile Yayın — OneTap Bilgisayar (ücretsiz)
 
-## 1. Git başlat (henüz yok)
+## Neden 419 veya Bad Gateway alırsınız?
+
+| Hata | En sık neden |
+|------|----------------|
+| **419 Page Expired** (giriş) | `SESSION_DOMAIN=.onrender.com` → tarayıcı çerezi kaydetmez |
+| **419** | `APP_KEY` yok veya deploy sonrası değişti |
+| **419** | `APP_URL` yanlış (http yerine https, yanlış subdomain) |
+| **Bad Gateway** | `APP_KEY` eksik → container kapanır |
+| **Bad Gateway** | İlk açılış: ücretsiz plan 30–60 sn uyandırır, bekleyin |
+
+Kayıt çalışıp giriş çalışmıyorsa → neredeyse her zaman **session çerezi** sorunudur.
+
+---
+
+## Render Environment — zorunlu liste
+
+Render Dashboard → Web Service → **Environment** → aşağıdakileri ayarlayın.
+
+### Olması gerekenler
+
+| Key | Örnek / not |
+|-----|-------------|
+| `APP_NAME` | `OneTap Bilgisayar` |
+| `APP_KEY` | Yerel `.env` satırı: `base64:Cn01xr4y2G2alYFE9...` (**aynısı**) |
+| `APP_ENV` | `production` |
+| `APP_DEBUG` | `false` |
+| `APP_URL` | `https://storefront-laravel.onrender.com` (kendi URL’niz, **https**) |
+| `DB_CONNECTION` | `mysql` |
+| `DB_HOST` | `sql17.freesqldatabase.com` (paneldeki host) |
+| `DB_PORT` | `3306` |
+| `DB_DATABASE` | freesqldatabase veritabanı adı |
+| `DB_USERNAME` | kullanıcı adı |
+| `DB_PASSWORD` | şifre |
+| `SESSION_DRIVER` | `file` |
+| `SESSION_SECURE_COOKIE` | `true` |
+| `CACHE_STORE` | `file` |
+| `LOG_CHANNEL` | `stderr` |
+| `OPENWEATHER_API_KEY` | (isteğe bağlı) |
+| `GOOGLE_MAPS_API_KEY` | (isteğe bağlı) |
+
+### Olmaması gerekenler (419 yapar)
+
+| Key | Neden silinmeli |
+|-----|-----------------|
+| `SESSION_DOMAIN` | `.onrender.com` yazılıysa **mutlaka silin** |
+| `SANCTUM_STATEFUL_DOMAINS` | Gerek yok, karışıklık çıkarır |
+| `TRUSTED_PROXIES` | Kodda zaten `trustProxies('*')` var |
+
+`SESSION_DOMAIN` satırını Render’da **Delete** ile kaldırın, boş string bırakmayın.
+
+---
+
+## Kurulum adımları
+
+### 1. GitHub
 
 ```powershell
 cd C:\Users\Arnolfini\Desktop\Web_Projesi\computer-shop
-git init
 git add .
-git commit -m "OneTap Bilgisayar - Laravel 11"
+git commit -m "Render fix: session, trustProxies"
+git push
 ```
 
-## 2. GitHub
+### 2. Render
 
-1. github.com → New repository → `onetap-bilgisayar`
-2. `.env` dosyası repoda OLMAMALI (.gitignore'da)
+1. https://render.com → GitHub repo bağlı Web Service
+2. **Runtime: Docker**
+3. Environment tablosunu yukarıdaki gibi doldurun
+4. **Manual Deploy** veya otomatik deploy bekleyin
 
-```powershell
-git branch -M main
-git remote add origin https://github.com/KULLANICI_ADINIZ/onetap-bilgisayar.git
-git push -u origin main
+### 3. Log kontrol
+
+**Logs** sekmesinde şunu görmelisiniz:
+
+```
+Starting server on 0.0.0.0:10000
 ```
 
-## 3. Ücretsiz MySQL (db4free.net)
+`ERROR: APP_KEY is not set` görürseniz → `APP_KEY` ekleyin.
 
-- Host: `db4free.net`
-- Veritabanı + kullanıcı + şifre oluştur
-- Yerel SQL import: phpMyAdmin (db4free) veya deploy sonrası seed
+### 4. Veritabanı (ilk kez)
 
-## 4. Render
-
-1. https://render.com → Sign up → Connect GitHub
-2. **New +** → **Web Service** → repoyu seç
-3. **Runtime: Docker** (Dockerfile otomatik bulunur)
-4. **Environment Variables** ekle:
-
-| Key | Value |
-|-----|--------|
-| APP_NAME | OneTap Bilgisayar |
-| APP_KEY | (yerel .env APP_KEY kopyala) |
-| APP_URL | https://XXX.onrender.com |
-| DB_HOST | db4free.net |
-| DB_DATABASE | ... |
-| DB_USERNAME | ... |
-| DB_PASSWORD | ... |
-| OPENWEATHER_API_KEY | ... |
-| GOOGLE_MAPS_API_KEY | ... |
-
-5. **Create Web Service** → deploy bitene kadar bekle
-
-## 5. İlk açılışta veri
-
-Deploy sonrası Render **Shell** (varsa) veya yerelde db4free'e SQL import.
-
-Veya Shell'de bir kez:
-```bash
-php artisan db:seed --force
-php artisan products:download-images
-```
-
-## 6. Google Maps
-
-Referrer: `https://SIZIN-URL.onrender.com/*`
-
-## Sorun giderme: "Exited with status 1"
-
-En sık nedenler:
-
-1. **APP_KEY eksik** — Render → Environment → `APP_KEY` = yerel `.env` içindeki `base64:...` değeri
-2. **MySQL bağlantısı** — `DB_HOST=db4free.net`, kullanıcı/şifre doğru; db4free panelinde uzaktan erişim açık olmalı
-3. **Eski Dockerfile** — `migrate` başarısız olunca sunucu hiç başlamıyordu; güncel repo `docker/entrypoint.sh` kullanır (migrate hata verse bile site ayağa kalkar)
-
-Deploy sonrası **Logs** sekmesinde `WARN: migrations failed` görürseniz önce DB değişkenlerini düzeltin, sonra **Shell**:
+Render **Shell** (ücretsiz planda bazen yok):
 
 ```bash
 php artisan migrate --force
 php artisan db:seed --force
-php artisan products:download-images
 ```
 
-`composer.lock` mutlaka GitHub'da olmalı (Docker build için).
+Shell yoksa: yerelde `migrate:fresh --seed` → phpMyAdmin ile freesqldatabase’e SQL import (`database/backup/konum_computer_shop.sql`).
 
-## Sorun giderme: "419 Page Expired" (giriş)
+### 5. Tarayıcı
 
-**En sık neden:** Render Environment'da `SESSION_DOMAIN=.onrender.com` tanımlı.
+1. `storefront-laravel.onrender.com` için **tüm çerezleri silin**
+2. Gizli pencerede `/giris` açın
+3. `admin@onetapbilgisayar.com` / `admin123`
 
-`onrender.com` Public Suffix olduğu için tarayıcı bu domain'deki çerezi **kaydetmez**. Login POST'unda session yok → 419.
+Giriş POST yanıtında `set-cookie` içinde `domain=.onrender.com` **olmamalı**. Sadece host adı veya domain yok olmalı.
 
-**Çözüm:**
+---
 
-1. Render → Environment → `SESSION_DOMAIN` değişkenini **tamamen silin** (boş kalsın).
-2. Tarayıcıda site çerezlerini temizleyin veya gizli pencerede deneyin.
-3. `APP_KEY` ve `APP_URL=https://storefront-laravel.onrender.com` (kendi URL'niz) dolu olsun.
-4. `SESSION_DRIVER=database` ise Shell'de: `php artisan migrate --force` (`sessions` tablosu gerekir).
+## Google Maps
 
-## Yerel vs canlı (aynı klasör mü?)
+Referrer: `https://storefront-laravel.onrender.com/*`
 
-**Evet — tek proje klasörü doğru.** İki ayrı klasör gerekmez.
+---
+
+## Yerel geliştirme (aynı proje)
 
 | | Yerel | Render |
 |---|--------|--------|
-| Kod | Aynı klasör (`computer-shop`) | GitHub'dan aynı kod |
-| Ayarlar | `.env` (git'e gitmez) | Render Environment Variables |
-| Veritabanı | `127.0.0.1` / Workbench | freesqldatabase.com (veya başka host) |
-
-Geliştirirken: `git push` → Render deploy. Yerelde: `php artisan serve`. İkisi birbirini bozmaz; sadece **farklı veritabanı** kullanırsınız.
-
-### Yerelde sepet / ürünler açılmıyorsa
-
-1. MySQL çalışsın, `.env` içinde `DB_HOST=127.0.0.1` ve `DB_DATABASE=konum_computer_shop` olsun.
-2. Bir kez:
+| Ayar | `.env` | Environment Variables |
+| DB | `127.0.0.1` | freesqldatabase host |
 
 ```powershell
-cd C:\Users\Arnolfini\Desktop\Web_Projesi\computer-shop
 php artisan migrate:fresh --seed
+php artisan serve
 ```
 
-3. Sepet ve siparişler **giriş yapınca** açılır (`auth` middleware).
-4. Demo: `admin@onetapbilgisayar.com` / `admin123` veya `ahmet@test.com` / `user123`
+Render’a push etmek yereli bozmaz.
 
-## Sorun giderme: "Bad Gateway"
+---
 
-Site hiç açılmıyorsa container başlamıyor demektir.
+## Sorun giderme: "500 Server Error" (sepet / hesabım)
 
-1. **Render → Logs** açın. Şunlardan biri görünür:
-   - `ERROR: APP_KEY is not set` → Environment'a `APP_KEY` ekleyin (yerel `.env` ile aynı).
-   - `bad interpreter` / `/bin/sh\r` → `entrypoint.sh` Windows satır sonu; `.gitattributes` ile push edin.
-   - `WARN: migrate failed or timed out` → DB bilgileri yanlış veya freesqldatabase yanıt vermiyor; site yine de açılmalı.
-2. **Ücretsiz plan:** 15 dk kullanılmayınca uyur; ilk istek 30–60 sn sürebilir, birkaç kez yenileyin.
-3. Zorunlu env: `APP_KEY`, `APP_URL`, `DB_*`. `SESSION_DOMAIN` **tanımlamayın**.
+Sepet veya profil **500** veriyorsa genelde **`carts`**, **`cart_items`** veya **`user_balances`** tabloları eksiktir.
+
+Deploy sonrası Render Shell:
+
+```bash
+php artisan migrate --force
+```
+
+Log’da `ensure_ecommerce_tables` migration’ı çalışmalı.
+
+Shell yoksa: yerelde `php artisan migrate` → freesqldatabase phpMyAdmin’de `migrations` tablosunu kontrol edin.
+
+---
+
+## Hâlâ 419?
+
+1. Environment ekranının **screenshot**’unu atın (şifreleri kapatabilirsiniz)
+2. Giriş POST → **Response Headers** → `set-cookie` satırlarını kopyalayın
+3. Render **Logs** son 20 satır
+
+Bu üçü ile kesin teşhis konur.

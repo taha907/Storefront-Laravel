@@ -11,7 +11,7 @@ class CartService
 {
     public function getOrCreateCart(User $user): Cart
     {
-        return $user->cart ?? Cart::create(['user_id' => $user->id]);
+        return Cart::firstOrCreate(['user_id' => $user->id]);
     }
 
     public function addItem(User $user, Product $product, int $quantity = 1): Cart

@@ -21,7 +21,7 @@ class CartController extends Controller
     public function index()
     {
         $cart = $this->cartService->getOrCreateCart(auth()->user());
-        $cart->load('items.product.images');
+        $cart->load('items.product');
         $balance = $this->balanceService->getBalance(auth()->user());
 
         return view('shop.cart.index', compact('cart', 'balance'));

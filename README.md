@@ -104,19 +104,15 @@ php artisan products:download-images
 
 Seeder çalıştırıldığında görseller otomatik indirilir ve `storage/app/public/products/` + veritabanına kaydedilir.
 
-## Yayın (ücretsiz / düşük maliyet hosting)
+## Canlı yayın (Render)
 
-| Seçenek | Uygunluk | Not |
-|---------|----------|-----|
-| **Oracle Cloud Free VPS** | En iyi ücretsiz Laravel | 1 VM, PHP+MySQL kurulumu sizde |
-| **Render.com** | Orta | Ücretsiz katman uyur; MySQL için eklenti gerekir |
-| **Railway.app** | Orta | Aylık kredi; kolay deploy |
-| **InfinityFree** | Zayıf | Laravel 11 için önerilmez |
-| **000webhost** | Zayıf | Sınırlı, artisan zor |
+Adım adım: **[DEPLOY_RENDER.md](DEPLOY_RENDER.md)**
 
-**Öneri (proje sunumu):** Oracle Cloud ücretsiz VPS veya üniversite sunucusu. Hızlı demo için `php artisan serve` + **ngrok** ile geçici public URL.
+```powershell
+git push
+```
 
-`.env` production: `APP_DEBUG=false`, `APP_URL=https://siteniz.com`
+Render otomatik deploy eder (Dockerfile).
 
 ## Lisans
 

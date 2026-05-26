@@ -4,9 +4,9 @@ use Illuminate\Support\Str;
 
 return [
 
-    'driver' => env('SESSION_DRIVER', 'file'), // Canlıda veritabanını yormamak için varsayılanı file yaptık
+    'driver' => env('SESSION_DRIVER', 'file'),
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => (int) env('SESSION_LIFETIME', 120),
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
@@ -22,27 +22,19 @@ return [
 
     'lottery' => [2, 100],
 
-    'cookie' => env('SESSION_COOKIE', Str::slug(env('APP_NAME', 'laravel'), '_').'_session'),
+    'cookie' => env('SESSION_COOKIE', Str::slug((string) env('APP_NAME', 'laravel'), '_').'_session'),
 
     'path' => env('SESSION_PATH', '/'),
 
-    // Boş bırakın. Render'da ASLA .onrender.com yazmayın (419 hatası).
-    'domain' => env('SESSION_DOMAIN') ?: null,
+    // Hosting: boş bırakın (otomatik domain). ASLA .onrender.com gibi üst domain yazmayın.
+    'domain' => env('SESSION_DOMAIN'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | CRITICAL DEVOPS FIXES FOR RENDER (HTTPS)
-    |--------------------------------------------------------------------------
-    */
-    
-    // Render gibi proxy arkasında Secure cookie kontrolünü env ile yapıyoruz.
-    // (HTTP ile ilk giriş olursa tarayıcı Secure cookie'yi kaydetmez → 419; bu yüzden ayrıca ForceHttpsMiddleware var.)
-    'secure' => env('SESSION_SECURE_COOKIE', null),
+    // Render production: true. Yerelde boş bırakılabilir.
+    'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
 
     'http_only' => env('SESSION_HTTP_ONLY', true),
 
-    // Tarayıcının formu güvenli kabul etmesi için 'lax' değerini el ile garantiye alıyoruz
-    'same_site' => 'lax',
+    'same_site' => env('SESSION_SAME_SITE', 'lax'),
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 

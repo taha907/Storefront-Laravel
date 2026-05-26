@@ -6,11 +6,16 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\UserBalance;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class BalanceService
 {
     public function getBalance(User $user): float
     {
+        if (! Schema::hasTable('user_balances')) {
+            return 0.0;
+        }
+
         return (float) $user->balanceTransactions()->sum('amount');
     }
 

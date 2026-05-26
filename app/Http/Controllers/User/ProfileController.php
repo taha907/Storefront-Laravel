@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Services\BalanceService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,7 +15,9 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $balance = $balanceService->getBalance($user);
-        $transactions = $user->balanceTransactions()->latest()->take(20)->get();
+        $transactions = Schema::hasTable('user_balances')
+            ? $user->balanceTransactions()->latest()->take(20)->get()
+            : collect();
 
         return view('user.profile.show', compact('user', 'balance', 'transactions'));
     }

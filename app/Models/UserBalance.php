@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserBalance extends Model
 {
+    protected $table = 'user_balances';
+
     protected $fillable = ['user_id', 'amount', 'type', 'description', 'order_id'];
 
     protected function casts(): array
