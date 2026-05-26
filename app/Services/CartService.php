@@ -44,6 +44,11 @@ class CartService
 
     public function updateQuantity(CartItem $item, int $quantity): void
     {
+        if (! $item->product) {
+            $item->delete();
+            throw new \RuntimeException('Sepetteki ürün artık bulunmuyor. Ürün sepetten kaldırıldı.');
+        }
+
         if ($quantity <= 0) {
             $item->delete();
             return;

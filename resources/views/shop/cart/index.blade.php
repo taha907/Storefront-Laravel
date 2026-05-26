@@ -13,12 +13,12 @@
                 <tbody>
                 @foreach($cart->items as $item)
                     <tr>
-                        <td>{{ $item->product->name }}</td>
+                        <td>{{ $item->product?->name ?? 'Ürün bulunamadı (kaldırılmış)' }}</td>
                         <td>{{ number_format($item->unit_price, 2, ',', '.') }} ₺</td>
                         <td>
                             <form action="{{ route('cart.update', $item) }}" method="POST" class="d-flex gap-1">
                                 @csrf @method('PATCH')
-                                <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control form-control-sm" style="width:70px">
+                                <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product?->stock ?? $item->quantity }}" class="form-control form-control-sm" style="width:70px">
                                 <button class="btn btn-sm btn-outline-secondary">OK</button>
                             </form>
                         </td>

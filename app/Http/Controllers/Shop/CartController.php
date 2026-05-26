@@ -21,6 +21,9 @@ class CartController extends Controller
     public function index()
     {
         $cart = $this->cartService->getOrCreateCart(auth()->user());
+        // Canlı DB'de bazen eski/yarım migrationlardan orphan cart_items kalabiliyor (product silinmiş).
+        // Bu durum view'da $item->product->... erişimlerinde 500 üretir.
+        $cart->items()->whereDoesntHave('product')->delete();
         $cart->load('items.product');
         $balance = $this->balanceService->getBalance(auth()->user());
 
