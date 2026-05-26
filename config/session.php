@@ -34,8 +34,9 @@ return [
     |--------------------------------------------------------------------------
     */
     
-    // Canlı ortamda (production) çerezleri kesinlikle SECURE (HTTPS) olmaya zorluyoruz
-    'secure' => env('APP_ENV') === 'production' ? true : false,
+    // Render gibi proxy arkasında Secure cookie kontrolünü env ile yapıyoruz.
+    // (HTTP ile ilk giriş olursa tarayıcı Secure cookie'yi kaydetmez → 419; bu yüzden ayrıca ForceHttpsMiddleware var.)
+    'secure' => env('SESSION_SECURE_COOKIE', null),
 
     'http_only' => env('SESSION_HTTP_ONLY', true),
 
