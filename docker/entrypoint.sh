@@ -1,23 +1,22 @@
 #!/bin/sh
-set -e
-
-cd /app
+cd /app || exit 1
 
 PORT="${PORT:-10000}"
 
 if [ -z "$APP_KEY" ]; then
-    echo "ERROR: APP_KEY is not set. Add it under Render → Environment (copy from local .env)."
+    echo "ERROR: APP_KEY is not set. Render -> Environment -> APP_KEY (copy from local .env)."
     exit 1
 fi
 
 php artisan config:clear 2>/dev/null || true
-php artisan package:discover --ansi 2>/dev/null || true
 
-if php artisan migrate --force; then
-    echo "Database migrations completed."
+# Uzak MySQL yavas/yanit vermezse migrate sunucuyu bloke eder -> Bad Gateway
+if command -v timeout >/dev/null 2>&1; then
+    timeout 45 php artisan migrate --force --no-ansi \
+        || echo "WARN: migrate failed or timed out (site will still start)"
 else
-    echo "WARN: migrations failed. Check DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD on Render."
-    echo "      db4free: enable remote MySQL and allow connections from any host."
+    php artisan migrate --force --no-ansi \
+        || echo "WARN: migrate failed (site will still start)"
 fi
 
 php artisan storage:link 2>/dev/null || true

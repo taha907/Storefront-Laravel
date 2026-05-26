@@ -10,13 +10,16 @@ class ForceHttpsMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (app()->environment('production') && ! $request->secure()) {
-            $target = 'https://'.$request->getHttpHost().$request->getRequestUri();
-
-            return redirect()->to($target, 301);
+        if (! app()->environment('production')) {
+            return $next($request);
         }
 
-        return $next($request);
+        $forwarded = strtolower((string) $request->header('X-Forwarded-Proto', ''));
+        if ($request->secure() || $forwarded === 'https') {
+            return $next($request);
+        }
+
+        return redirect()->secure($request->getRequestUri(), 301);
     }
 }
 

@@ -116,3 +116,14 @@ php artisan migrate:fresh --seed
 
 3. Sepet ve siparişler **giriş yapınca** açılır (`auth` middleware).
 4. Demo: `admin@onetapbilgisayar.com` / `admin123` veya `ahmet@test.com` / `user123`
+
+## Sorun giderme: "Bad Gateway"
+
+Site hiç açılmıyorsa container başlamıyor demektir.
+
+1. **Render → Logs** açın. Şunlardan biri görünür:
+   - `ERROR: APP_KEY is not set` → Environment'a `APP_KEY` ekleyin (yerel `.env` ile aynı).
+   - `bad interpreter` / `/bin/sh\r` → `entrypoint.sh` Windows satır sonu; `.gitattributes` ile push edin.
+   - `WARN: migrate failed or timed out` → DB bilgileri yanlış veya freesqldatabase yanıt vermiyor; site yine de açılmalı.
+2. **Ücretsiz plan:** 15 dk kullanılmayınca uyur; ilk istek 30–60 sn sürebilir, birkaç kez yenileyin.
+3. Zorunlu env: `APP_KEY`, `APP_URL`, `DB_*`. `SESSION_DOMAIN` **tanımlamayın**.
