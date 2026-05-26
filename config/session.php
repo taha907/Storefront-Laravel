@@ -26,7 +26,8 @@ return [
 
     'path' => env('SESSION_PATH', '/'),
 
-    'domain' => env('SESSION_DOMAIN'),
+    // Boş bırakın. Render'da ASLA .onrender.com yazmayın (419 hatası).
+    'domain' => env('SESSION_DOMAIN') ?: null,
 
     /*
     |--------------------------------------------------------------------------

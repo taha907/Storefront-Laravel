@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // İçini tamamen boşaltıp eski orijinal haline getirdik
+        // Render (*.onrender.com): SESSION_DOMAIN=.onrender.com kullanılamaz (Public Suffix).
+        // Tarayıcı çerezi kaydetmez → login POST'ta 419 Page Expired.
+        $domain = config('session.domain');
+        if (is_string($domain) && $domain !== '' && str_contains($domain, 'onrender.com')) {
+            config(['session.domain' => null]);
+        }
     }
 }

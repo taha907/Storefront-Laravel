@@ -78,3 +78,41 @@ php artisan products:download-images
 ```
 
 `composer.lock` mutlaka GitHub'da olmalı (Docker build için).
+
+## Sorun giderme: "419 Page Expired" (giriş)
+
+**En sık neden:** Render Environment'da `SESSION_DOMAIN=.onrender.com` tanımlı.
+
+`onrender.com` Public Suffix olduğu için tarayıcı bu domain'deki çerezi **kaydetmez**. Login POST'unda session yok → 419.
+
+**Çözüm:**
+
+1. Render → Environment → `SESSION_DOMAIN` değişkenini **tamamen silin** (boş kalsın).
+2. Tarayıcıda site çerezlerini temizleyin veya gizli pencerede deneyin.
+3. `APP_KEY` ve `APP_URL=https://storefront-laravel.onrender.com` (kendi URL'niz) dolu olsun.
+4. `SESSION_DRIVER=database` ise Shell'de: `php artisan migrate --force` (`sessions` tablosu gerekir).
+
+## Yerel vs canlı (aynı klasör mü?)
+
+**Evet — tek proje klasörü doğru.** İki ayrı klasör gerekmez.
+
+| | Yerel | Render |
+|---|--------|--------|
+| Kod | Aynı klasör (`computer-shop`) | GitHub'dan aynı kod |
+| Ayarlar | `.env` (git'e gitmez) | Render Environment Variables |
+| Veritabanı | `127.0.0.1` / Workbench | freesqldatabase.com (veya başka host) |
+
+Geliştirirken: `git push` → Render deploy. Yerelde: `php artisan serve`. İkisi birbirini bozmaz; sadece **farklı veritabanı** kullanırsınız.
+
+### Yerelde sepet / ürünler açılmıyorsa
+
+1. MySQL çalışsın, `.env` içinde `DB_HOST=127.0.0.1` ve `DB_DATABASE=konum_computer_shop` olsun.
+2. Bir kez:
+
+```powershell
+cd C:\Users\Arnolfini\Desktop\Web_Projesi\computer-shop
+php artisan migrate:fresh --seed
+```
+
+3. Sepet ve siparişler **giriş yapınca** açılır (`auth` middleware).
+4. Demo: `admin@onetapbilgisayar.com` / `admin123` veya `ahmet@test.com` / `user123`
