@@ -8,3 +8,6 @@ storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
+bootstrap/cache/config.php
+bootstrap/cache/routes-v7.php
+bootstrap/cache/events.php

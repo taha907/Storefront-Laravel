@@ -14,6 +14,15 @@ Kayıt çalışıp giriş çalışmıyorsa → neredeyse her zaman **session çe
 
 ---
 
+## Sorun giderme: "Deploy failed"
+
+1. Render → **Events** veya **Logs** → Deploy satırına tıklayın, kırmızı hatayı okuyun.
+2. **Build failed:** Genelde `Dockerfile` veya `composer install` — güncel `Dockerfile` push edin.
+3. **Deploy failed (build OK):** `ERROR: APP_KEY is not set` → Environment’a `APP_KEY` ekleyin.
+4. `entrypoint.sh` Windows satır sonu → Dockerfile içinde `sed` ile düzeltilir (güncel repo).
+
+---
+
 ## Render Environment — zorunlu liste
 
 Render Dashboard → Web Service → **Environment** → aşağıdakileri ayarlayın.
