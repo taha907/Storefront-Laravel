@@ -12,9 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Render / Cloudflare: HTTPS ve session için proxy başlıklarına güven
-        $middleware->trustProxies(at: '*');
-    })
+    $middleware->alias([
+        'active' => \App\Http\Middleware\ActiveUserMiddleware::class, // Sınıf adın klasörde neyse onu yazmalısın
+    ]);
+})
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+    
