@@ -44,6 +44,41 @@ return new class extends Migration
                 $table->timestamps();
             });
         }
+
+        if (! Schema::hasTable('orders')) {
+            Schema::create('orders', function (Blueprint $table) {
+                $table->id();
+                $table->string('order_number')->unique();
+                $table->unsignedBigInteger('user_id');
+                $table->string('status')->default('pending');
+                $table->decimal('subtotal', 10, 2);
+                $table->decimal('balance_used', 10, 2)->default(0);
+                $table->decimal('card_paid', 10, 2)->default(0);
+                $table->decimal('total', 10, 2);
+                $table->text('shipping_address');
+                $table->string('shipping_city')->nullable();
+                $table->string('shipping_phone')->nullable();
+                $table->string('card_last_four', 4)->nullable();
+                $table->timestamp('approved_at')->nullable();
+                $table->timestamp('cancelled_at')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->text('admin_note')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable('order_items')) {
+            Schema::create('order_items', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('product_id');
+                $table->string('product_name');
+                $table->unsignedInteger('quantity');
+                $table->decimal('unit_price', 10, 2);
+                $table->decimal('total_price', 10, 2);
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

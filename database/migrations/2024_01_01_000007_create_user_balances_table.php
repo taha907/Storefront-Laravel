@@ -10,11 +10,11 @@ return new class extends Migration
     {
         Schema::create('user_balances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
             $table->decimal('amount', 10, 2)->default(0);
             $table->string('type');
             $table->string('description')->nullable();
-            $table->foreignId('order_id')->nullable()->constrained()->nullOnDelete();
+            $table->unsignedBigInteger('order_id')->nullable();
             $table->timestamps();
         });
     }
