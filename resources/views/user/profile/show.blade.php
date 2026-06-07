@@ -24,7 +24,7 @@
                     <tbody>
                     @forelse($transactions as $t)
                         <tr>
-                            <td>{{ $t->created_at->format('d.m.Y H:i') }}</td>
+                            <td>{{ $t->created_at ? $t->created_at->format('d.m.Y H:i') : '-' }}</td>
                             <td>{{ $t->description ?? $t->type }}</td>
                             <td class="{{ $t->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($t->amount, 2, ',', '.') }} ₺</td>
                         </tr>
