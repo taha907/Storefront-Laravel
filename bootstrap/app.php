@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->trustProxies(at: '*');
     $middleware->alias([
         'active' => \App\Http\Middleware\ActiveUserMiddleware::class, // Sınıf adın klasörde neyse onu yazmalısın
+        'admin'  => \App\Http\Middleware\AdminMiddleware::class,
     ]);
 })
     ->withExceptions(function (Exceptions $exceptions) {
