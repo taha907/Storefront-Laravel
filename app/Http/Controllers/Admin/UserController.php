@@ -46,8 +46,9 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string',
-            'is_active' => 'boolean',
         ]);
+
+        $data['is_active'] = $request->boolean('is_active');
 
         $user->update($data);
 
