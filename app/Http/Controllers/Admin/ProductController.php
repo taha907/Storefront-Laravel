@@ -102,12 +102,18 @@ class ProductController extends Controller
             return;
         }
 
+        // Eğer yeni görsel yüklenmişse, eskisinin yerine geçmesi için mevcut görselleri siliyoruz.
+        foreach ($product->images as $image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($image->path);
+            $image->delete();
+        }
+
         foreach ($request->file('images') as $index => $file) {
             $path = $file->store('products', 'public');
             ProductImage::create([
                 'product_id' => $product->id,
                 'path' => $path,
-                'is_primary' => $product->images()->count() === 0 && $index === 0,
+                'is_primary' => $index === 0, // İlk yüklenen her zaman primary olsun
                 'sort_order' => $index,
             ]);
         }
