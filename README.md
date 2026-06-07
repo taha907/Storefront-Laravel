@@ -1,119 +1,34 @@
-# OneTap Bilgisayar — Ekipman Satış Sitesi
+# OneTap Bilgisayar — Ekipman Satış Platformu
 
-**TBL304 Web Programlama Projesi** — Laravel 11, MySQL, Bootstrap 5
+[![Laravel Version](https://img.shields.io/badge/Laravel-11.x-FF2D20?logo=laravel)](https://laravel.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-4169E1?logo=postgresql)](https://www.postgresql.org)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap)](https://getbootstrap.com)
+[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?logo=render)](https://render.com)
 
-Kocaeli merkezli bilgisayar ekipmanları (işlemci, ekran kartı, RAM, SSD, monitör) online satış platformu.
+OneTap Bilgisayar, modern web teknolojileriyle geliştirilmiş, yüksek performanslı ve ölçeklenebilir bir bilgisayar ekipmanları (İşlemci, Ekran Kartı, RAM, SSD, Monitör) e-ticaret platformudur.
 
-## Özellikler (Proje İsterleri)
+## 🚀 Özellikler
 
-| Rol | Özellikler |
-|-----|------------|
-| **Admin** | Ürün CRUD, fotoğraf yükleme, stok/fiyat, satışa sun/kaldır, sipariş onaylama, kargo aşamalarını ilerletme, kullanıcı yönetimi (dondurma/silme) |
-| **User** | Kayıt/giriş, profil ve şifre güncelleme, ürün listeleme, sepet, bakiye öncelikli ödeme + kart simülasyonu, sipariş takibi/iptal (onay öncesi), teslim aldım, üyelik pasifleştirme |
-| **API** | OpenWeatherMap hava durumu + Google Maps JavaScript API (iframe değil) |
+| Rol | Yetkiler & Yetenekler |
+|-----|-----------------------|
+| ⚡ **Admin** | Ürün CRUD işlemleri, dinamik fotoğraf yükleme, stok/fiyat yönetimi, ürün görünürlük kontrolü, sipariş onaylama ve gelişmiş kargo/lojistik aşamalarını yönetme, kullanıcı hesap yönetimi (dondurma/silme). |
+| 🛒 **Kullanıcı** | Güvenli kayıt/giriş, profil ve şifre güncellleme, gelişmiş ürün filtreleme ve listeleme, dinamik sepet yönetimi, bakiye öncelikli cüzdan sistemi + kart simülasyonu ile güvenli ödeme, sipariş takibi ve kolay iptal/iade süreçleri. |
+| 🔌 **Entegrasyonlar** | **OpenWeatherMap API** ile lokasyon bazlı anlık hava durumu analizi ve **Google Maps JavaScript API** entegrasyonu (Native SDK, iframe değildir). |
 
-## Gereksinimler
+---
 
-- PHP 8.2+
-- Composer 2.x
-- MySQL 8.x (veya MariaDB)
-- Node.js (opsiyonel, sadece asset derleme için)
+## 🛠️ Sistem Gereksinimleri
 
-### Önerilen kurulum (Windows)
+- **PHP**: 8.2 veya üzeri
+- **Composer**: 2.x
+- **Veritabanı**: PostgreSQL 15+
+- **Node.js**: Asset derleme süreçleri için (Opsiyonel)
 
-1. [Laragon](https://laragon.org/download/) veya XAMPP kurun (PHP + MySQL)
-2. PATH'e PHP ve MySQL ekleyin
+---
 
-## Kurulum
+## 📦 Yerel Kurulum (Local Setup)
 
-```powershell
-cd computer-shop
-copy .env.example .env
-# .env içinde DB_DATABASE, DB_USERNAME, DB_PASSWORD düzenleyin
-# OPENWEATHER_API_KEY ve GOOGLE_MAPS_API_KEY (opsiyonel)
-
-composer install
-php artisan key:generate
-php artisan storage:link
-
-# MySQL'de veritabanı oluşturun:
-# CREATE DATABASE konum_computer_shop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-php artisan migrate:fresh --seed
-php artisan serve
-```
-
-Tarayıcı: **http://127.0.0.1:8000**
-
-Otomatik kurulum: `.\setup.ps1` (PHP ve MySQL PATH'te olmalı)
-
-## Demo Hesaplar
-
-| Rol | E-posta | Şifre |
-|-----|---------|-------|
-| Admin | admin@onetapbilgisayar.com | admin123 |
-| Kullanıcı | ahmet@test.com | user123 |
-
-(5 kullanıcı + 20 ürün seeder ile gelir)
-
-## SQL Yedek (Teslim Zorunluluğu)
-
-```bash
-mysqldump -u root -p konum_computer_shop > database/backup/konum_computer_shop.sql
-```
-
-## API Anahtarları
-
-1. **Hava durumu:** https://openweathermap.org/api → `.env` → `OPENWEATHER_API_KEY`
-2. **Harita:** https://console.cloud.google.com/ → Maps JavaScript API → `GOOGLE_MAPS_API_KEY`
-
-Anahtar yoksa hava durumu demo veri gösterir; harita alanında bilgi mesajı çıkar.
-
-## Klasör Yapısı
-
-```
-computer-shop/
-├── app/Http/Controllers/   # Auth, Admin, Shop, User
-├── app/Models/
-├── app/Services/           # Cart, Order, Balance, Weather
-├── database/migrations/
-├── database/seeders/
-├── resources/views/        # Bootstrap Blade şablonları
-└── routes/web.php, api.php
-```
-
-## Sipariş Akışı
-
-1. Kullanıcı sipariş verir → `pending` (iptal edilebilir, bakiye iadesi)
-2. Admin onaylar → `approved` → aşamalar: tedarik → kutulama → kargo → yolda → teslim
-3. Kullanıcı "Ürünlerimi Teslim Aldım" → `completed`
-
-## Proje Teslimi
-
-Sıkıştırılmış klasör: `ogrencino_ad_soyad.zip` içinde:
-
-1. Tüm kaynak kod (`computer-shop/`)
-2. `database/backup/konum_computer_shop.sql`
-3. IEEE format rapor (Word + PDF)
-
-## Ürün görselleri (internetten indirme)
-
-```bash
-php artisan products:download-images
-```
-
-Seeder çalıştırıldığında görseller otomatik indirilir ve `storage/app/public/products/` + veritabanına kaydedilir.
-
-## Canlı yayın (Render)
-
-Adım adım: **[DEPLOY_RENDER.md](DEPLOY_RENDER.md)**
-
-```powershell
-git push
-```
-
-Render otomatik deploy eder (Dockerfile).
-
-## Lisans
-
-Eğitim projesi — TBL304
+1. Projeyi bilgisayarınıza klonlayın ve proje dizinine girin:
+   ```bash
+   git clone [https://github.com/kullaniciadi/computer-shop.git](https://github.com/kullaniciadi/computer-shop.git)
+   cd computer-shop
